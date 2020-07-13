@@ -47,6 +47,14 @@ const RootQueryType = new GraphQLObjectType({
             type: new GraphQLList(UsersType),
             description: 'List of users',
             resolve: () => users
+        },
+        userById: {
+            type: UsersType,
+            description: 'Single use by id',
+            args: {
+                id: {type: GraphQLInt}
+            },
+            resolve: (parent, args) => users.find(user => user.id === args.id)
         }
     })
 });
