@@ -27,7 +27,25 @@ const users = [
         name: "Toby",
         age: 6
     }
-]
+];
+
+const userAuth = [
+    {
+        id: 1,
+        username: 'user1',
+        password: 'pass',
+    },
+    {
+        id: 2,
+        username: 'user2',
+        password: 'pass2',
+    },
+    {
+        id: 3,
+        username: 'user3',
+        password: 'pass3',
+    }
+];
 
 const UsersType = new GraphQLObjectType({
     name: 'Users',
@@ -35,7 +53,20 @@ const UsersType = new GraphQLObjectType({
     fields: () => ({
         id: {type: new GraphQLNonNull(GraphQLInt)},
         name: {type: new GraphQLNonNull(GraphQLString)},
-        age: {type: new GraphQLNonNull(GraphQLInt)}
+        age: {type: new GraphQLNonNull(GraphQLInt)},
+        userAuth: {
+            type: UserAuthType
+        }
+    })
+});
+
+const UserAuthType = new GraphQLObjectType({
+    name: 'UserAuth',
+    description: 'User authentication data',
+    fields: () => ({
+        id: {type: new GraphQLNonNull(GraphQLInt)},
+        username: {type: new GraphQLNonNull(GraphQLString)},
+        password: {type: new GraphQLNonNull(GraphQLString)}
     })
 })
 
@@ -55,6 +86,11 @@ const RootQueryType = new GraphQLObjectType({
                 id: {type: GraphQLInt}
             },
             resolve: (parent, args) => users.find(user => user.id === args.id)
+        },
+        userAuth: {
+            type: new GraphQLList(UserAuthType),
+            description: 'User authentication data',
+            resolve: () => userAuth
         }
     })
 });
@@ -75,7 +111,20 @@ const RootMutationType = new GraphQLObjectType({
                 users.push(newUser)
                 return newUser
             }
-        }
+        },
+        addUserAuth: {
+            type: UserAuthType,
+            description: 'Add user authentication',
+            args: {
+                username: { type: GraphQLNonNull(GraphQLString)},
+                password: { type: GraphQLNonNull(GraphQLString)}
+            },
+            resolve: (parent, args) => {
+                const newUser = {id: userAuth.length + 1, username: args.username, password: args.password}
+                userAuth.push(newUser)
+                return newUser
+            }
+        },
     })
 })
 
